@@ -64,9 +64,9 @@ const createProducto = async (req, res) => {
     .run(req);
   await check("cantidad")
     .notEmpty()
-    .isInt()
+    .isFloat()
     .withMessage(
-      "La cantidad de la variante es obligatorio y debe ser un número entero",
+      "La cantidad de la variante es obligatorio y debe ser un número decimal",
     )
     .run(req);
   // dimensiones opcionales
@@ -155,7 +155,7 @@ const createProducto = async (req, res) => {
   // Parsear valores numéricos
   const subcategoriaIdInt = parseInt(subcategoriaId, 10);
   const ubi_alma_idInt = parseInt(ubi_alma_id, 10);
-  const cantidadInt = parseInt(cantidad, 10);
+  const cantidadFloat = parseFloat(cantidad);
   const precioPublicoFloat = parseFloat(precio_publico);
   const precioContratistaFloat = parseFloat(precio_contratista);
   const costoCompraFloat = parseFloat(costo_compra);
@@ -165,7 +165,7 @@ const createProducto = async (req, res) => {
   const anchoFloat = ancho !== undefined ? parseFloat(ancho) : undefined;
   const largoFloat = largo !== undefined ? parseFloat(largo) : undefined;
 
-  const valor_stock = (cantidadInt * costoCompraFloat).toFixed(2);
+  const valor_stock = (cantidadFloat * costoCompraFloat).toFixed(2);
 
   //Validar que el codigo no exista en la base de datos
   const productoExistente = await prisma.variantes.findFirst({
@@ -253,7 +253,7 @@ const createProducto = async (req, res) => {
       codigo,
       color,
       descripcion,
-      cantidad: cantidadInt,
+      cantidad: cantidadFloat,
       precio_publico: precioPublicoFloat,
       precio_contratista: precioContratistaFloat,
       costo_compra: costoCompraFloat,
@@ -376,9 +376,9 @@ const crearVariante = async (req, res) => {
     .run(req);
   await check("cantidad")
     .notEmpty()
-    .isInt()
+    .isFloat()
     .withMessage(
-      "La cantidad de la variante es obligatorio y debe ser un número entero",
+      "La cantidad de la variante es obligatorio y debe ser un número decimal",
     )
     .run(req);
   // dimensiones opcionales para actualización
@@ -506,7 +506,7 @@ const crearVariante = async (req, res) => {
     // Parsear valores numéricos
     const productoIdInt = parseInt(productoId, 10);
     const ubi_alma_idInt = parseInt(ubi_alma_id, 10);
-    const cantidadInt = parseInt(cantidad, 10);
+    const cantidadFloat = parseFloat(cantidad);
     const precioPublicoFloat = parseFloat(precio_publico);
     const precioContratistaFloat = parseFloat(precio_contratista);
     const costoCompraFloat = parseFloat(costo_compra);
@@ -516,7 +516,7 @@ const crearVariante = async (req, res) => {
     const anchoFloat = ancho !== undefined ? parseFloat(ancho) : undefined;
     const largoFloat = largo !== undefined ? parseFloat(largo) : undefined;
 
-    const valor_stock = (cantidadInt * costoCompraFloat).toFixed(2);
+    const valor_stock = (cantidadFloat * costoCompraFloat).toFixed(2);
 
     let medidasSt;
     if (
@@ -536,7 +536,7 @@ const crearVariante = async (req, res) => {
       codigo,
       color,
       descripcion,
-      cantidad: cantidadInt,
+      cantidad: cantidadFloat,
       precio_publico: precioPublicoFloat,
       precio_contratista: precioContratistaFloat,
       costo_compra: costoCompraFloat,
@@ -565,7 +565,8 @@ const crearVariante = async (req, res) => {
     await prisma.subcategorias.update({
       where: { id: subcategoriaId.subcategoriaId },
       data: {
-        valor_stock: subcategoria.valor_stock + cantidadInt * costoCompraFloat,
+        valor_stock:
+          subcategoria.valor_stock + cantidadFloat * costoCompraFloat,
       },
     });
 
@@ -651,8 +652,8 @@ const updateVariante = async (req, res) => {
     .run(req);
   await check("cantidad")
     .optional()
-    .isInt()
-    .withMessage("La cantidad debe ser un número entero")
+    .isFloat()
+    .withMessage("La cantidad debe ser un número decimal")
     .run(req);
   await check("alto")
     .optional()
@@ -784,7 +785,7 @@ const updateVariante = async (req, res) => {
     if (codigo !== undefined) updateData.codigo = codigo;
     if (color !== undefined) updateData.color = color;
     if (descripcion !== undefined) updateData.descripcion = descripcion;
-    if (cantidad !== undefined) updateData.cantidad = parseInt(cantidad, 10);
+    if (cantidad !== undefined) updateData.cantidad = parseFloat(cantidad);
     if (alto !== undefined) updateData.alto = parseFloat(alto);
     if (ancho !== undefined) updateData.ancho = parseFloat(ancho);
     if (largo !== undefined) updateData.largo = parseFloat(largo);
